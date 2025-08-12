@@ -11,9 +11,10 @@ export class UserRouter {
   private initRoutes = (): void => {
     this.router.get("/", this.userController.getUsers);
     this.router.post("/register", this.userController.register);
+    this.router.post("/login", this.userController.login);
   };
 
-  getRouter(): Router {
+  public getRouter(): Router {
     return this.router;
   }
 }

@@ -6,6 +6,7 @@ import { UserRouter } from "./modules/user/user.router";
 import { UserController } from "./modules/user/user.controller";
 import { UserService } from "./modules/user/user.service";
 import { PrismaService } from "./modules/prisma/prisma.service";
+import { PasswordService } from "./modules/user/password.service";
 
 export default class App {
   public app;
@@ -18,13 +19,24 @@ export default class App {
   }
 
   private configure(): void {
-    this.app.use(cors());
+    const allowedOrigins = ["http://localhost:3000"];
+    this.app.use(
+      cors({
+        origin: allowedOrigins,
+        allowedHeaders: ["Content-Type", "Authorization"],
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true,
+      })
+    );
     this.app.use(json());
   }
 
   private routes(): void {
     // User router & service & controller
-    const userService = new UserService(new PrismaService());
+    const userService = new UserService(
+      new PrismaService(),
+      new PasswordService()
+    );
     const userController = new UserController(userService);
     const userRouter = new UserRouter(userController);
 

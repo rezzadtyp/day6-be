@@ -1,9 +1,20 @@
 import { NextFunction, Request, Response } from "express";
 import { UserService } from "./user.service";
 import { RegisterDto } from "./dto/register.dto";
+import { LoginDto } from "./dto/login.dto";
 
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  login = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await this.userService.login(req.body as LoginDto);
+
+      res.status(200).send(result);
+    } catch (error) {
+      next(error);
+    }
+  };
 
   register = async (req: Request, res: Response, next: NextFunction) => {
     try {
