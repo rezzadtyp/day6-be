@@ -1,9 +1,11 @@
+import { appConfig } from "../../config";
 import { ApiError } from "../../utils/api-error";
 import { PrismaService } from "../prisma/prisma.service";
 import { prismaExclude } from "../prisma/utils";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { PasswordService } from "./password.service";
+import jwt from "jsonwebtoken";
 
 export class UserService {
   constructor(
@@ -36,7 +38,20 @@ export class UserService {
       throw new ApiError("Invalid password", 401);
     }
 
-    return user;
+    // generate token dari jsonwebtoken (import jwt from jsonwebtoken)
+    const token = jwt.sign({ id: user.id }, appConfig.jwtSecret, {
+      expiresIn: "24h", // token akan expired dalam 24 jam
+    });
+
+    return {
+      message: "Login success",
+      data: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+      token,
+    };
   };
 
   register = async (body: RegisterDto) => {
@@ -82,4 +97,23 @@ export class UserService {
 
     return user;
   };
+
+  getMe = async (id: string) => {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: prismaExclude("User", ["password"]),
+    });
+
+    if (!user) {
+      throw new ApiError("User not found", 404);
+    }
+
+    return {
+      message: "Retrieve me success",
+      data: user,
+    };
+  };
+
+  // login dulu (kalo udah ada register)
+  // token yang dari login, buat header authorization /me
 }

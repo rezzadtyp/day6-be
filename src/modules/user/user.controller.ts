@@ -37,4 +37,26 @@ export class UserController {
       next(error);
     }
   };
+
+  getUserById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await this.userService.getUserById(
+        req.params.id as string
+      );
+
+      res.status(200).send(result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getMe = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await this.userService.getMe(req.user.id as string);
+
+      res.status(200).send(result);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
