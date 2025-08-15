@@ -7,6 +7,9 @@ import { UserController } from "./modules/user/user.controller";
 import { UserService } from "./modules/user/user.service";
 import { PrismaService } from "./modules/prisma/prisma.service";
 import { PasswordService } from "./modules/user/password.service";
+import { ProductService } from "./modules/product/product.service";
+import { ProductController } from "./modules/product/product.controller";
+import { ProductRouter } from "./modules/product/product.router";
 
 export default class App {
   public app;
@@ -40,13 +43,18 @@ export default class App {
     const userController = new UserController(userService);
     const userRouter = new UserRouter(userController);
 
+    // Product router & service & controller
+    const productService = new ProductService(new PrismaService());
+    const productController = new ProductController(productService);
+    const productRouter = new ProductRouter(productController);
+
     // Health check
     this.app.get("/", (_, res) => {
       res.send("Hello World");
     });
 
-    // User routes
     this.app.use("/user", userRouter.getRouter());
+    this.app.use("/product", productRouter.getRouter());
   }
 
   private errorHandler(): void {
