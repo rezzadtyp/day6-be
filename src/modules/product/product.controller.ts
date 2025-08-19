@@ -7,9 +7,11 @@ export class ProductController {
 
   createProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const files = req.files as Express.Multer.File[];
       const result = await this.productService.createProduct(
         req.user.id,
-        req.body as CreateProductDto
+        req.body as CreateProductDto,
+        files[0]
       );
 
       res.status(200).send(result);

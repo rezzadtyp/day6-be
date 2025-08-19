@@ -10,6 +10,7 @@ import { PasswordService } from "./modules/user/password.service";
 import { ProductService } from "./modules/product/product.service";
 import { ProductController } from "./modules/product/product.controller";
 import { ProductRouter } from "./modules/product/product.router";
+import path from "path";
 
 export default class App {
   public app;
@@ -55,6 +56,10 @@ export default class App {
 
     this.app.use("/user", userRouter.getRouter());
     this.app.use("/product", productRouter.getRouter());
+    this.app.use(
+      "/public",
+      express.static(path.join(process.cwd(), "public/products"))
+    );
   }
 
   private errorHandler(): void {

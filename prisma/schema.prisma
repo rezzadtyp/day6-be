@@ -38,6 +38,7 @@ model Product {
   deletedAt DateTime?
   userId    String
   User      User      @relation(fields: [userId], references: [id])
+  imageUrl  String?
 
   @@map("products")
 }

@@ -11,7 +11,11 @@ interface IGetProductsQuery extends PaginationQueryParams {
 export class ProductService {
   constructor(private readonly prisma: PrismaService) {}
 
-  createProduct = async (userId: string, body: CreateProductDto) => {
+  createProduct = async (
+    userId: string,
+    body: CreateProductDto,
+    file: Express.Multer.File
+  ) => {
     const { name, price, stock } = body;
 
     const product = await this.prisma.product.findFirst({
@@ -35,9 +39,10 @@ export class ProductService {
     const newProduct = await this.prisma.product.create({
       data: {
         name,
-        price,
-        stock,
+        price: typeof price === "string" ? parseInt(price) : price,
+        stock: typeof stock === "string" ? parseInt(stock) : stock,
         userId: user.id,
+        imageUrl: `/public/${file.filename}`,
       },
     });
 
@@ -62,7 +67,7 @@ export class ProductService {
     const products = await this.prisma.product.findMany({
       where,
       include: {
-        user: true,
+        User: true,
       },
       skip: (page - 1) * take,
       take,
